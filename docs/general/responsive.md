@@ -20,7 +20,7 @@ Chart.js provides a [few options](#configuration-options) to enable responsivene
 
 ## Important Note
 
-Detecting when the canvas size changes can not be done directly from the `CANVAS` element. Chart.js uses its parent container to update the canvas *render* and *display* sizes. However, this method requires the container to be **relatively positioned**. It's also strongly recommended to **dedicate this container to the chart canvas only**. Responsiveness can then be achieved by setting relative values for the container size ([example](https://codepen.io/chartjs/pen/YVWZbz)):
+Detecting when the canvas size changes can not be done directly from the `CANVAS` element. Chart.js uses its parent container to update the canvas *render* and *display* sizes. However, this method requires the container to be **relatively positioned** and **dedicated to the chart canvas only**. Responsiveness can then be achieved by setting relative values for the container size ([example](https://codepen.io/chartjs/pen/YVWZbz)):
 
 ```html
 <div class="chart-container" style="position: relative; height:40vh; width:80vw">
@@ -32,4 +32,16 @@ The chart can also be programmatically resized by modifying the container size:
 
 ```javascript
 chart.canvas.parentNode.style.height = '128px';
+```
+
+## Printing Resizeable Charts
+
+CSS media queries allow changing styles when printing a page. The CSS applied from these media queries may cause charts to need to resize. However, the resize won't happen automatically. To support resizing charts when printing, one needs to hook the [onbeforeprint](https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeprint) event and manually trigger resizing of each chart.
+
+```javascript
+function beforePrintHandler () {
+  for (var id in Chart.instances) {
+    Chart.instances[id].resize()
+  }
+}
 ```

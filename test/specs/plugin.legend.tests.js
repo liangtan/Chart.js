@@ -1,16 +1,12 @@
 // Test the rectangle element
 describe('Legend block tests', function() {
-	it('Should be constructed', function() {
-		var legend = new Chart.Legend({});
-		expect(legend).not.toBe(undefined);
-	});
-
 	it('should have the correct default config', function() {
 		expect(Chart.defaults.global.legend).toEqual({
 			display: true,
 			position: 'top',
 			fullWidth: true, // marks that this box should take the full width of the canvas (pushing down other boxes)
 			reverse: false,
+			weight: 1000,
 
 			// a callback that will handle
 			onClick: jasmine.any(Function),
@@ -153,6 +149,31 @@ describe('Legend block tests', function() {
 			pointStyle: 'crossRot',
 			datasetIndex: 2
 		}]);
+	});
+
+	it('should not throw when the label options are missing', function() {
+		var makeChart = function() {
+			window.acquireChart({
+				type: 'bar',
+				data: {
+					datasets: [{
+						label: 'dataset1',
+						backgroundColor: '#f31',
+						borderCapStyle: 'butt',
+						borderDash: [2, 2],
+						borderDashOffset: 5.5,
+						data: []
+					}],
+					labels: []
+				},
+				options: {
+					legend: {
+						labels: false,
+					}
+				}
+			});
+		};
+		expect(makeChart).not.toThrow();
 	});
 
 	it('should draw correctly', function() {
@@ -389,6 +410,33 @@ describe('Legend block tests', function() {
 			chart.options.legend.display = false;
 			chart.update();
 			expect(chart.legend.options.display).toBe(false);
+		});
+
+		it ('should update the associated layout item', function() {
+			var chart = acquireChart({
+				type: 'line',
+				data: {},
+				options: {
+					legend: {
+						fullWidth: true,
+						position: 'top',
+						weight: 150
+					}
+				}
+			});
+
+			expect(chart.legend.fullWidth).toBe(true);
+			expect(chart.legend.position).toBe('top');
+			expect(chart.legend.weight).toBe(150);
+
+			chart.options.legend.fullWidth = false;
+			chart.options.legend.position = 'left';
+			chart.options.legend.weight = 42;
+			chart.update();
+
+			expect(chart.legend.fullWidth).toBe(false);
+			expect(chart.legend.position).toBe('left');
+			expect(chart.legend.weight).toBe(42);
 		});
 
 		it ('should remove the legend if the new options are false', function() {
